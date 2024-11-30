@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -12,7 +11,6 @@ import (
 
 type Config struct {
 	Host string
-	Port string
 }
 
 func main() {
@@ -27,13 +25,11 @@ func run(ctx context.Context, getenv func(string) string) error {
 	ctx, cancel := signal.NotifyContext(ctx, os.Interrupt)
 	defer cancel()
 
-	config := Config{
-		Host: "localhost",
-		Port: "8080",
-	}
+	config := parseConfig(getenv)
+	fmt.Println(config.Host)
 
 	httpServer := &http.Server{
-		Addr:    net.JoinHostPort(config.Host, config.Port),
+		Addr:    config.Host,
 		Handler: newServer(),
 	}
 
@@ -51,4 +47,10 @@ func run(ctx context.Context, getenv func(string) string) error {
 		return err
 	}
 	return nil
+}
+
+func parseConfig(getenv func(string) string) Config {
+	return Config{
+		Host: getenv("PSS_HOST"),
+	}
 }
