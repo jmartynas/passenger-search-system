@@ -26,7 +26,6 @@ func run(ctx context.Context, getenv func(string) string) error {
 	defer cancel()
 
 	config := parseConfig(getenv)
-	fmt.Println(config.Host)
 
 	httpServer := &http.Server{
 		Addr:    config.Host,
